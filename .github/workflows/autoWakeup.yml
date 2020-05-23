@@ -1,5 +1,5 @@
 #自动激活Lean Cloud
-name: AutoWakeUpLeanCLoud
+name: AutoWakeUpLeanCLoud/自动激活Lean Cloud
 
 on: 
   release:
@@ -10,7 +10,8 @@ on:
   #  branches: 
   #    - master
   schedule:
-    - cron: "*/18 0-15 * * *"
+    - cron: "0 0 * * *"   # 代表每天8:00执行一次
+    # - cron: "*/18 0-15 * * *"  # 代表每天8点到晚上11:59执行
   watch:
     types: [started]
    
@@ -18,29 +19,37 @@ jobs:
   build:
     runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id  # 自己点的 start
+    strategy:
+      matrix:
+        python-version: [3.8]  # 指定python的版本号
+        
     steps:
-    - name: Checkout
+    - name: Checkout/开始运行
       uses: actions/checkout@master
-    - name: Set up Python #安装python
+    - name: Set up Python ${{ matrix.python-version }} #安装python
       uses: actions/setup-python@v1
       with:
-        python-version: 3.8
+        python-version:  ${{ matrix.python-version }}
+
     - name: Install requests #安装requests
       run: |
         pip install requests
-    - name: Waking  #读取站点信息
+
+    - name: Waking/读取站点信息  #读取站点信息
       env: 
         $CONFIG_SITE: ${{ secrets.Site }} # 读取评论后台地址
       run: | 
         python run.py ${{ secrets.Site }}
         echo `date +"%Y-%m-%d %H:%M:%S"` begin > time.log
-    - name: Commit #更新日志到GitHub仓库
+
+    - name: Commit/提交日志 #更新日志到GitHub仓库
       run: |
-        git config --global user.email AutoWakeUp@email.com
-        git config --global user.name AutoWakeUp
+        git config --global user.name "${{secrets.GIT_NAME}}"
+        git config --global user.email "${{secrets.GIT_EMAIL}}"
         git add .
         git commit -m "Successful Wake" -a
+
     - name: Push changes
-      uses: ad-m/github-push-action@master
+      uses: ad-m/github-push-action@master  # 自动提交代码的 Actions
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
