@@ -7,8 +7,8 @@ on:
   push:
     tags:
     - 'v*'
-  #  branches: 
-  #    - master
+   branches: 
+     - master
   schedule:
     - cron: "0 0 * * *"   # 代表每天8:00执行一次
     # - cron: "*/18 0-15 * * *"  # 代表每天8点到晚上11:59执行
