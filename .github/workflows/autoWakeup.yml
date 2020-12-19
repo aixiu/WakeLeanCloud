@@ -47,8 +47,7 @@ jobs:
         git config --global user.name "${{secrets.GIT_NAME}}"
         git config --global user.email "${{secrets.GIT_EMAIL}}"
         git add .
-        git commit -m "Successful Wake" -a
-
+        git commit -m "Successfully Wake" -a
     - name: Push changes
       uses: ad-m/github-push-action@master  # 自动提交代码的 Actions
       with:
